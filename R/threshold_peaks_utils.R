@@ -1,9 +1,20 @@
+#' Find the peaks positions
+#'
+#' @param C2 channel intensity
+#'
+#' @return peak positions
 find_peaks <- function(C2){
 
   which(splus2R::peaks(C2, span = 7))
 }
 
 
+#' Compute distance between peaks
+#'
+#' @param x_peaks positions of peaks
+#' @param n number of pixels
+#'
+#' @return a vector of length `length(x_peaks)-1` with the distances between peaks
 interpeak_dist <- function(x_peaks, n){
 
   x_peaks <- c(0, x_peaks, n)
@@ -13,11 +24,27 @@ interpeak_dist <- function(x_peaks, n){
 }
 
 
+#' Determine threshold
+#'
+#' @param C2 channel intensity
+#'
+#' @return a threshold for `C2`
 get_threshold <- function(C2){
-  quantile(C2, 0.5)
+  stats::quantile(C2, 0.5)
 }
 
 
+#' Define the peak domains
+#'
+#' @param np peak number
+#' @param C2 channel intensity
+#' @param C2_peaks_pos positions of peaks
+#' @param C2_peaks_thresholded_pos positions of peaks above threshold
+#' @param spanD.left left span of domain
+#' @param spanD.right right span of domain
+#' @param spread parameter
+#'
+#' @return a data.frame with the domains around peak
 define_area_under_peak_C2 <- function(np, C2, C2_peaks_pos, C2_peaks_thresholded_pos, spanD.left, spanD.right, spread = 3){
   pixel.size <- length(C2)
   C2_peaks_interp_dist <- interpeak_dist(C2_peaks_pos, length(C2))
