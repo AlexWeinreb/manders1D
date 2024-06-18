@@ -2,14 +2,17 @@
 #' Threshold the peaks for single individual
 #'
 #' @param data_filt data.frame subsetted for one individual
-#' @param plot_path either FALSE (do not save plots) or a path to a directory to save plots
+#' @param plot_path either NULL (do not save plots) or a path to a directory to save plots
 #' @param dim.png dimensions of the plot to save, ignored if plot_path = FALSE
 #'
 #' @return a data.frame with 1 row, and columns for all computed variables
 #'
-threshold_peaks_one_indiv <- function(data_filt, plot_path = FALSE, dim.png = c(1000,600)){
+threshold_peaks_one_indiv <- function(data_filt, plot_path = NULL, dim.png = c(1000,600)){
 
 
+  ind_name <- unique(data_filt$individual_copy)
+
+  stopifnot(length(ind_name) == 1L)
 
 
   C2 <- data_filt$values.C2
@@ -26,14 +29,23 @@ threshold_peaks_one_indiv <- function(data_filt, plot_path = FALSE, dim.png = c(
 
 
 
-  # #plot the worms' C2
-  # if(plot_path){
-  #   grDevices::png(filename=paste(plot_path, "/peaks_",worm,".png",sep=""),
-  #                  width=dim.png[1],height=dim.png[2])
-  #   plot_one_thresholded(C2, C2_peaks_thresholded_pos, threshold)
-  #
-  #   grDevices::dev.off()
-  # }
+  #plot the worms' C2
+  if(! is.null(plot_path)){
+    grDevices::png(filename = paste0(plot_path, "/peaks_", ind_name, ".png"),
+                   width = dim.png[1], height = dim.png[2])
+
+    plot(C2,
+         t="l", col = 'green4',
+         xlab="pixels",ylab="Intensity of fluorescence (AU)",
+         main = paste("Thresholding of individual\n", ind_name))
+
+    graphics::points(C2_peaks_thresholded_pos, C2[C2_peaks_thresholded_pos],
+                     t="p", col = 'darkred', lwd = 2, cex = 1.5)
+
+    graphics::abline(h=threshold, col="grey30", lty = 'dashed', lwd = 3)
+
+    grDevices::dev.off()
+  }
 
 
   # Define span: left then right. We exclude the 1st and last peaks.
@@ -81,16 +93,35 @@ threshold_peaks_one_indiv <- function(data_filt, plot_path = FALSE, dim.png = c(
 
   last <- round((pos_last_peak - pos_penultimate_peak)/2 + pos_penultimate_peak)
 
-  # if(save.plots){
-  #   png(filename = paste(wd,"figures/C2_domains_worm_",worm,".png",sep=""),width=dim.png[1],height=dim.png[2])
-  #   plot(all.C2[[worm]],t='l')
-  #   points(xp,all.C2[[worm]][xp],col=vc)
-  #   abline(v=inits,col=vc)
-  #   abline(v=ends,col=vc)
-  #   #abline(v=beg,col="red")
-  #   #abline(v=last,col="red")
-  #   dev.off()
-  # }
+  if(! is.null(plot_path)){
+    png(filename = paste0(plot_path, "/domains_worm_", ind_name, ".png"),
+        width=dim.png[1],height=dim.png[2])
+
+
+    pal_alpha = hcl.colors(nrow(peak_positions),
+                           palette = "Dark 2",
+                           alpha = .1)
+    pal_noalpha = hcl.colors(nrow(peak_positions),
+                             palette = "Dark 2")
+
+    plot(C2,
+         t='l', col = 'green4', lwd = 2,
+         xlab = "X (pixel)", ylab = "Channel C2 intensity",
+         main = paste("Domains of individual\n", ind_name))
+
+    graphics::points(C2_peaks_thresholded_pos, C2_peaks_values*1.01,
+                     pch = 25, col = pal_noalpha, bg = pal_noalpha,
+                     cex = 1.5)
+
+    # graphics::abline(v=peak_positions$init, col=pal)
+    # graphics::abline(v=peak_positions$end, col=pal)
+
+    graphics::rect(peak_positions$init, xright = peak_positions$end,
+                   ybottom = 0, ytop = 1.1*max(C2_peaks_values),
+                   col = pal_alpha, border = NA)
+
+    dev.off()
+  }
 
 
   # look for overlaps

@@ -1,8 +1,7 @@
 #' Read data for single condition
 #'
 #' @param dir_path Path to data
-#' @param col_individuals If the path is to a csv file, the name of the column containing the individuals
-#' @param plot_path either FALSE (do not save plots) or a path to a directory to save plots
+#' @param plot_path either NULL (do not save plots) or a path to a directory to save plots
 #' @param dim.png dimensions of the plot to save, ignored if plot_path = FALSE
 #'
 #' @details
@@ -14,7 +13,7 @@
 #'
 #' @return data.frame with the input data in long format
 #' @export
-read_condition <- function(dir_path, col_individuals, plot_path = FALSE, dim.png = c(1000,600)){
+read_condition <- function(dir_path, plot_path = NULL, dim.png = c(1000,600)){
 
   if(! file.exists(dir_path)){
     stop("Path not found: ", dir_path)
@@ -59,7 +58,7 @@ read_condition <- function(dir_path, col_individuals, plot_path = FALSE, dim.png
 
 
 
-  if(plot_path){
+  if(! is.null(plot_path)){
 
     for(ind_name in unique(data$individual)){
 
@@ -67,7 +66,7 @@ read_condition <- function(dir_path, col_individuals, plot_path = FALSE, dim.png
                      width = dim.png[1], height = dim.png[2])
 
 
-      plot_one_worm(data[data$individual == ind_name], ind_name)
+      plot_one_worm(data[data$individual == ind_name,], ind_name)
 
       grDevices::dev.off()
     }
