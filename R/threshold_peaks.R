@@ -67,7 +67,7 @@ threshold_peaks_one_indiv <- function(data_filt, plot_path = NULL, dim.png = c(1
 
 
   peak_positions <- purrr::map_dfr(seq_along(C2_peaks_thresholded_pos),
-                                   ~ define_area_under_peak_C2(.x,
+                                   ~ define_domain_per_peak(.x,
                                                                C2,
                                                                C2_peaks_pos,
                                                                C2_peaks_thresholded_pos,
@@ -76,22 +76,6 @@ threshold_peaks_one_indiv <- function(data_filt, plot_path = NULL, dim.png = c(1
                                                                spread = 3))
 
 
-
-
-
-  ## Computing the ratio of C2 and non C2 areas
-  colocalised.C1 <- 0
-  size.C2.domains <- 0
-  size.C2.outside.domains <- 0
-  non.colocalised.C1 <- 0
-
-
-
-  #right of last peak, excluding the last peak
-  pos_last_peak <- C2_peaks_thresholded_pos[length(C2_peaks_thresholded_pos)]
-  pos_penultimate_peak <- C2_peaks_thresholded_pos[length(C2_peaks_thresholded_pos)-1]
-
-  last <- round((pos_last_peak - pos_penultimate_peak)/2 + pos_penultimate_peak)
 
   if(! is.null(plot_path)){
     png(filename = paste0(plot_path, "/domains_worm_", ind_name, ".png"),
@@ -113,9 +97,6 @@ threshold_peaks_one_indiv <- function(data_filt, plot_path = NULL, dim.png = c(1
                      pch = 25, col = pal_noalpha, bg = pal_noalpha,
                      cex = 1.5)
 
-    # graphics::abline(v=peak_positions$init, col=pal)
-    # graphics::abline(v=peak_positions$end, col=pal)
-
     graphics::rect(peak_positions$init, xright = peak_positions$end,
                    ybottom = 0, ytop = 1.1*max(C2_peaks_values),
                    col = pal_alpha, border = NA)
@@ -124,80 +105,52 @@ threshold_peaks_one_indiv <- function(data_filt, plot_path = NULL, dim.png = c(1
   }
 
 
-  # look for overlaps
-  inits <- peak_positions$init
-  ends <- peak_positions$end
-  if(ends[length(inits)-1]>inits[length(inits)]){ # should solve issues when the last peak overlaps, together with other loop below
-    ends[length(inits)-1]=ends[length(inits)]
-    inits[length(inits)]=inits[length(inits)-1]
-  }
-  if(ends[1]>inits[2]){ # should solve issues when the first peak overlaps
-    ends[1]=ends[2]
-    inits[2]=inits[1]
-    print("overlaps in the first peak")
-  }
 
-  fluo_under_first_domain <- pracma::trapz(inits[1]:ends[1],
-                                           data_filt$values.C1[inits[1]:ends[1]])
-  fluo_under_last_domain <- pracma::trapz(inits[length(inits)]:ends[length(inits)],
-                                          data_filt$values.C1[inits[length(inits)]:ends[length(inits)]])
+  # Measure only the part under peaks
+  x_under_peaks <- purrr::map2(peak_positions$init, peak_positions$end,
+                               \(i,e) i:e) |>
+    purrr::reduce(union)
 
-  colocalised.C1 <- fluo_under_first_domain + fluo_under_last_domain
+  C1_worm <- data_filt$values.C1
 
-  size_first_domain <- length(inits[1]:ends[1])
-  size_last_domain <- length(inits[length(inits)]:ends[length(inits)])
+  C1_under_peaks <- C1_worm
+  C1_under_peaks[-x_under_peaks] <- 0
+  # plot(C1_under_peaks)
 
-  size.C2.domains <- size_first_domain + size_last_domain
+  intensity_C1_colocalized <- pracma::trapz(seq_along(C1_under_peaks), C1_under_peaks)
+  intensity_C1_total <- pracma::trapz(seq_along(C1_worm), C1_worm)
 
+  ratio <- intensity_C1_colocalized/intensity_C1_total
 
+  size_C2_domains <- length(x_under_peaks)
+  total_length_px <- length(C1_worm)
+  size_C2_outside <- total_length_px - size_C2_domains
 
-  for(domain in 2:(length(inits)-1)){
-    if(ends[domain]>inits[domain+1]){ #should solve issues with overlapping peaks
-      ends[domain]=ends[domain+1]
-      inits[domain+1]=inits[domain]
-      colocalised.C1 <- colocalised.C1+pracma::trapz(inits[domain]:ends[domain],
-                                             data_filt$values.C1[inits[domain]:ends[domain]]) #synaptic receptors fluo # actually colocalized intensity (area under curve)
-      size.C2.domains <- size.C2.domains+length(inits[domain]:ends[domain])  #length of the presyn domain. # size of C2-containing domains
-      print("overlapping peaks")
-    } else if(inits[domain]<ends[domain-1]){
-      next
-    } else {
-      colocalised.C1 <- colocalised.C1+pracma::trapz(inits[domain]:ends[domain],
-                                             data_filt$values.C1[inits[domain]:ends[domain]]) #synaptic receptors fluo # actually colocalized intensity (area under curve)
-      size.C2.domains <- size.C2.domains+length(inits[domain]:ends[domain])  #length of the presyn domain. # size of C2-containing domains
-    }
-  }
-
-  if(ends[length(inits)-1]>inits[length(inits)]){ # should solve issues when the last peak overlaps, together with other loop above
-    colocalised.C1 <- colocalised.C1-pracma::trapz(inits[length(inits)]:ends[length(inits)-1],
-                                           data_filt$values.C1[inits[length(inits)]:ends[length(inits)-1]])
-    size.C2.domains <- size.C2.domains-length(inits[length(inits)]:ends[length(inits)-1])
-    print("overlaps in the last peak")
-  }
-
-  pixel.size <- nrow(data_filt)
-
-  intensity.C1.total <- pracma::trapz(1:pixel.size, data_filt$values.C1[1:pixel.size])
-  non.colocalised.C1 <- intensity.C1.total-colocalised.C1
-  size.C2.outside.domains <- pixel.size - size.C2.domains
+  intensity_C1_outside <- intensity_C1_total - intensity_C1_colocalized
 
   data.frame(
-    ratio = colocalised.C1*size.C2.outside.domains/(non.colocalised.C1*size.C2.domains), # ratio of coloc / nonColoc
-    ratio.area = colocalised.C1/non.colocalised.C1,
-    ratio.total = colocalised.C1/(colocalised.C1+non.colocalised.C1), # ratio of coloc / total
-    colocalised.C1.all = colocalised.C1,
-    non.colocalised.C1.all = non.colocalised.C1,
-    size.C2.domains.all = size.C2.domains,
-    size.C2.outside.domains.all = size.C2.outside.domains,
-    mean.intensity.C1.coloc.C2 = colocalised.C1/size.C2.domains, 		# intensity of area under curve of C1 signal within C2 domains divided by the size of the C2 domains
-    mean.intensity.C1.non.coloc.C2 = non.colocalised.C1/size.C2.outside.domains,		# intensity of area under curve of C1 signal outside C2 domains divided by the size outside C2 domains
-    synapse.all = length(C2_peaks_thresholded_pos),   # nb peaks
+    intensity_C1_colocalized = intensity_C1_colocalized,
+    intensity_C1_outside = intensity_C1_outside,
+    intensity_C1_total = intensity_C1_total,
 
-    C1.average.per.peak  =  colocalised.C1/length(C2_peaks_thresholded_pos), #average C1 intensity per peak
-    C1.total  =  colocalised.C1+non.colocalised.C1, #sum of C1 intensities in each domains
-    C1.total.true  =  pracma::trapz(inits[1]:ends[length(ends)],
-                            data_filt$values.C1[inits[1]:ends[length(ends)]]) #total area under curve, should be similar to C1.total
+    size_C2_domains = size_C2_domains,
+    size_C2_outside = size_C2_outside,
+    size_C2_total = total_length_px,
 
+    proportion_C1_intensity_in_domains = intensity_C1_colocalized / intensity_C1_total,
+    proportion_C2_area_in_domains = size_C2_domains / total_length_px,
+
+    # ratio of (C1coloc/C1noncoloc) / (C2domains/C2nondomains)
+    ratio_domains_nondomains_intensity_area = intensity_C1_colocalized * size_C2_outside /
+      (intensity_C1_outside * size_C2_domains),
+
+    # intensity of area under curve of C1 signal within C2 domains divided by the size of the C2 domains
+    mean_intensity_C1_in_domains = intensity_C1_colocalized / size_C2_domains,
+    # intensity of area under curve of C1 signal outside C2 domains divided by the size outside C2 domains
+    mean_intensity_C1_outside = intensity_C1_outside/size_C2_outside,
+
+    nb_of_peaks = length(C2_peaks_thresholded_pos),
+    C1_average_per_peak  =  intensity_C1_colocalized/length(C2_peaks_thresholded_pos)
   )
 
 }

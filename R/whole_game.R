@@ -34,6 +34,8 @@ whole_game <- function(input_dir, output_dir, plot_path = NULL,
                          ~ read_condition(file.path(input_dir, .x),
                                           plot_path = plot_path))
 
+  # data_filt <- (data |> dplyr::mutate(individual_copy = individual) |> tidyr::nest(.by = c("condition", "individual")) |> dplyr::pull(data))[[19]]
+
   res <- data |>
     dplyr::mutate(individual_copy = individual) |>
     tidyr::nest(.by = c("condition", "individual")) |>

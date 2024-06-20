@@ -45,18 +45,20 @@ get_threshold <- function(C2){
 #' @param spread parameter
 #'
 #' @return a data.frame with the domains around peak
-define_area_under_peak_C2 <- function(np, C2, C2_peaks_pos, C2_peaks_thresholded_pos, spanD.left, spanD.right, spread = 3){
+define_domain_per_peak <- function(np, C2, C2_peaks_pos, C2_peaks_thresholded_pos, spanD.left, spanD.right, spread = 3){
+
   pixel.size <- length(C2)
   C2_peaks_interp_dist <- interpeak_dist(C2_peaks_pos, length(C2))
 
 
-  n.peak <- which(C2_peaks_thresholded_pos == C2_peaks_thresholded_pos[np])   # np is the rank among the peaks above thresh, n.peak the rank in all local maxima
+  peak_nb <- which(C2_peaks_thresholded_pos == C2_peaks_thresholded_pos[np])
 
-  bb <- ceiling(C2_peaks_thresholded_pos[np]+C2_peaks_interp_dist[n.peak]/2)
+  bb <- ceiling(C2_peaks_thresholded_pos[np] + C2_peaks_interp_dist[peak_nb]/2)
+
   if(bb > pixel.size){
-    x.coord <- c(floor(C2_peaks_thresholded_pos[np]-C2_peaks_interp_dist[n.peak]/2):pixel.size)
+    x.coord <- c(floor(C2_peaks_thresholded_pos[np]-C2_peaks_interp_dist[peak_nb]/2):pixel.size)
   } else {
-    x.coord <- c(floor(C2_peaks_thresholded_pos[np]-C2_peaks_interp_dist[n.peak]/2):ceiling(C2_peaks_thresholded_pos[np]+C2_peaks_interp_dist[n.peak]/2))  #the span to fit
+    x.coord <- c(floor(C2_peaks_thresholded_pos[np]-C2_peaks_interp_dist[peak_nb]/2):ceiling(C2_peaks_thresholded_pos[np]+C2_peaks_interp_dist[peak_nb]/2))  #the span to fit
   }
 
 
@@ -67,10 +69,10 @@ define_area_under_peak_C2 <- function(np, C2, C2_peaks_pos, C2_peaks_thresholded
   decision.right <- spanD.right[x.coord] + halfmax
 
   # borders of C2 domain in the span
-  bord.left <- tail(which(decision.left[1:floor(C2_peaks_interp_dist[n.peak]/2 - 1)] == 0), n=1)
+  bord.left <- tail(which(decision.left[1:floor(C2_peaks_interp_dist[peak_nb]/2 - 1)] == 0), n=1)
   if(length(bord.left) == 0) bord.left <- 0
 
-  bord.right <- which(decision.right[ceiling(C2_peaks_interp_dist[n.peak]/2 + 1):length(decision.right)] == 0)[1] + floor(C2_peaks_interp_dist[n.peak]/2)
+  bord.right <- which(decision.right[ceiling(C2_peaks_interp_dist[peak_nb]/2 + 1):length(decision.right)] == 0)[1] + floor(C2_peaks_interp_dist[peak_nb]/2)
   if(is.na(bord.right)) bord.right <- length(x.coord)
 
 
