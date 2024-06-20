@@ -50,7 +50,7 @@ process_whole_directory <- function(input_dir, output_dir, plot_path = NULL,
     tidyr::nest(.by = c("condition", "individual")) |>
     dplyr::mutate(outs = purrr::map(
       data,
-      ~ threshold_peaks_one_individual(.x,
+      ~ threshold_peaks_one_individual(.x, column_names = "individual_copy",
                                        plot_path = plot_path, dim.png = dim.png)
     )) |>
     dplyr::select(-data) |>

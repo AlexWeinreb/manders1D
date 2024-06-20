@@ -6,6 +6,7 @@
 \usage{
 threshold_peaks_one_individual(
   data_filt,
+  column_names = "individual",
   plot_path = NULL,
   dim.png = c(1000, 600),
   method_integration = "trapz"
@@ -13,6 +14,8 @@ threshold_peaks_one_individual(
 }
 \arguments{
 \item{data_filt}{data.frame subsetted for one individual}
+
+\item{column_names}{name of the column containing the individual names}
 
 \item{plot_path}{either NULL (do not save plots) or a path to a directory to save plots}
 

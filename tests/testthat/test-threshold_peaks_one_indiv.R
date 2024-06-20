@@ -2,7 +2,7 @@ test_that("Uniform int under simple peak", {
 
   data_filt <- data.frame(values.C2 = dnorm(1:100, mean = 30),
                           values.C1 = dunif(1:100, min = 0, max = 100),
-                          individual_copy = "my_test_ind")
+                          individual = "my_test_ind")
 
   output <- threshold_peaks_one_individual(data_filt)
 
@@ -38,7 +38,7 @@ test_that("Uniform int under simple peak, by sum", {
 
   data_filt <- data.frame(values.C2 = dnorm(1:100, mean = 30),
                           values.C1 = dunif(1:100, min = 0, max = 100),
-                          individual_copy = "my_test_ind")
+                          individual = "my_test_ind")
 
   output <- threshold_peaks_one_individual(data_filt, method_integration = "sum")
 
@@ -78,7 +78,7 @@ test_that("Uniform int under simple peak property", {
           property = function(mean.C2, width.C2){
             data_filt <- data.frame(values.C2 = dnorm(1:100, mean = mean.C2, sd = width.C2),
                                     values.C1 = dunif(1:100, min = 1, max = 100),
-                                    individual_copy = "my_test_ind")
+                                    individual = "my_test_ind")
 
             output <- threshold_peaks_one_individual(data_filt)
 
@@ -98,7 +98,7 @@ test_that("Uniform int under simple peak property, sum method", {
           property = function(mean.C2, width.C2){
             data_filt <- data.frame(values.C2 = dnorm(1:100, mean = mean.C2, sd = width.C2),
                                     values.C1 = dunif(1:100, min = 1, max = 100),
-                                    individual_copy = "my_test_ind")
+                                    individual = "my_test_ind")
 
             output <- threshold_peaks_one_individual(data_filt, method_integration = "sum")
 
@@ -117,7 +117,7 @@ test_that("Uniform int under double peak property", {
             data_filt <- data.frame(values.C2 = dnorm(1:101, mean = mean.C2, sd = width.C2) +
                                       dnorm(1:101, mean = mean.C2+2*width.C2, sd = width.C2),
                                     values.C1 = dunif(1:101, min = 1, max = 101),
-                                    individual_copy = "my_test_ind")
+                                    individual = "my_test_ind")
 
             output <- threshold_peaks_one_individual(data_filt)
 
@@ -140,7 +140,7 @@ test_that("Uniform int under double peak property, sum methods", {
             data_filt <- data.frame(values.C2 = dnorm(1:101, mean = mean.C2, sd = width.C2) +
                                       dnorm(1:101, mean = mean.C2+2*width.C2, sd = width.C2),
                                     values.C1 = dunif(1:101, min = 1, max = 101),
-                                    individual_copy = "my_test_ind")
+                                    individual = "my_test_ind")
 
             output <- threshold_peaks_one_individual(data_filt, method_integration = "sum")
 

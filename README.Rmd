@@ -1,0 +1,81 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# manders1D
+
+
+Given two channels (from fluorescence microscopy), use one channel for
+    thresholding and define "domains", then evaluate the intensity of the second channel
+    within the domains.
+    
+    
+## Installation
+
+You can install the development version of manders1D from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("AlexWeinreb/manders1D")
+```
+
+## Example step by step
+
+Given a directory (corresponding to a condition, e.g. a genotype), which contains csv files (corresponding to individual biological replicates), all the files in the directory can be read with:
+
+```{r eval=FALSE}
+library(manders1D)
+genotype_dir <- "data/genotype1/"
+
+data <- read_condition(genotype_dir)
+```
+
+```{r echo=FALSE}
+library(manders1D)
+genotype_dir <- "../melissa/input/csvs/EN9174/"
+
+data <- read_condition(genotype_dir)
+```
+
+The resulting file has columns `condition` (the name of the directory), `individual` (the name of the csv file), `values.C1` and `values.C2` (which had to be columns in the csv files).
+
+```{r}
+head(data)
+```
+
+Each individual can be processed by `threshold_peaks_one_individual()`:
+
+```{r}
+first_individual <- unique(data$individual)[[1]]
+data_single_ind <- data[ data$individual == first_individual, ]
+
+quantif_single_individual <- threshold_peaks_one_individual(data_single_ind)
+head(quantif_single_individual)
+```
+
+
+
+## Example in single command
+
+Alternatively, the command `process_whole_directory()` runs all these steps given an input an output directory:
+
+```{r eval=FALSE}
+library(manders1D)
+
+process_whole_directory(input_dir = "data/input/genotype1",
+                        output_dir = "data/output/genotype1")
+```
+
+
+

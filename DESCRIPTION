@@ -26,3 +26,5 @@ Imports:
     tidyr,
     utils
 RoxygenNote: 7.3.1
+URL: https://github.com/AlexWeinreb/manders1D
+BugReports: https://github.com/AlexWeinreb/manders1D/issues
