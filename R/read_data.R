@@ -10,6 +10,7 @@
 #' If it's the path to a directory, it is assumed to contain csv files
 #'  for individuals, and the directory name is assumed to describe the condition.
 #'
+#' Each csv file is expected to have columns named "values.C1" and "values.C2"
 #'
 #' @return data.frame with the input data in long format
 #' @export
@@ -50,6 +51,13 @@ read_condition <- function(dir_path, plot_path = NULL, dim.png = c(1000,600)){
                             utils::read.csv(path) |>
                               tibble::add_column(individual = ind_name)
                           })
+
+  if(! (("values.C1" %in% colnames(data)) &&
+        ("values.C2" %in% colnames(data))) ){
+    stop("The csv files should have columns named 'values.C1' and 'values.C2'. Instead, found ",
+         ncol(data)," with names ", colnames(data))
+  }
+
   data[["condition"]] <- condition
   data <- data[c("condition", "individual",
                  "values.C1", "values.C2")]

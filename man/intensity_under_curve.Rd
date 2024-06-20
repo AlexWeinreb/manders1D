@@ -20,6 +20,6 @@ The area under the curve (single numeric value)
 Compute area under curve
 }
 \details{
-If method is `trapz`, uses the Trapezoidal Integration from `{pracma}`. If method is `sum`, simply
+If method is `trapz`, uses the Trapezoidal Integration from package `pracma`. If method is `sum`, simply
 sums the heights of `y` (ignoring `x` altogether).
 }

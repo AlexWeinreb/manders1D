@@ -24,4 +24,6 @@ Path to the data files for a single condition (e.g. genotype).
 
 If it's the path to a directory, it is assumed to contain csv files
  for individuals, and the directory name is assumed to describe the condition.
+
+Each csv file is expected to have columns named "values.C1" and "values.C2"
 }

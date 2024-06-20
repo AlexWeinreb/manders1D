@@ -102,7 +102,7 @@ define_domain_per_peak <- function(np, C2, C2_peaks_pos, C2_peaks_thresholded_po
 #' @param method integration method
 #'
 #' @details
-#' If method is `trapz`, uses the Trapezoidal Integration from `{pracma}`. If method is `sum`, simply
+#' If method is `trapz`, uses the Trapezoidal Integration from package `pracma`. If method is `sum`, simply
 #' sums the heights of `y` (ignoring `x` altogether).
 #'
 #'

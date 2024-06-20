@@ -4,7 +4,7 @@ test_that("Uniform int under simple peak", {
                           values.C1 = dunif(1:100, min = 0, max = 100),
                           individual_copy = "my_test_ind")
 
-  output <- threshold_peaks_one_indiv(data_filt)
+  output <- threshold_peaks_one_individual(data_filt)
 
   size_dom <- 13L
   nb_pixels <- 100L
@@ -40,7 +40,7 @@ test_that("Uniform int under simple peak, by sum", {
                           values.C1 = dunif(1:100, min = 0, max = 100),
                           individual_copy = "my_test_ind")
 
-  output <- threshold_peaks_one_indiv(data_filt, method_integration = "sum")
+  output <- threshold_peaks_one_individual(data_filt, method_integration = "sum")
 
   size_dom <- 13L
   nb_pixels <- 100L
@@ -80,7 +80,7 @@ test_that("Uniform int under simple peak property", {
                                     values.C1 = dunif(1:100, min = 1, max = 100),
                                     individual_copy = "my_test_ind")
 
-            output <- threshold_peaks_one_indiv(data_filt)
+            output <- threshold_peaks_one_individual(data_filt)
 
             expect_equal(output$proportion_C1_intensity_in_domains, output$proportion_C2_area_in_domains,
                          tolerance = 0.05)
@@ -100,7 +100,7 @@ test_that("Uniform int under simple peak property, sum method", {
                                     values.C1 = dunif(1:100, min = 1, max = 100),
                                     individual_copy = "my_test_ind")
 
-            output <- threshold_peaks_one_indiv(data_filt, method_integration = "sum")
+            output <- threshold_peaks_one_individual(data_filt, method_integration = "sum")
 
             expect_equal(output$proportion_C1_intensity_in_domains, output$proportion_C2_area_in_domains)
           })
@@ -119,7 +119,7 @@ test_that("Uniform int under double peak property", {
                                     values.C1 = dunif(1:101, min = 1, max = 101),
                                     individual_copy = "my_test_ind")
 
-            output <- threshold_peaks_one_indiv(data_filt)
+            output <- threshold_peaks_one_individual(data_filt)
 
             expect_equal(output$proportion_C1_intensity_in_domains, output$proportion_C2_area_in_domains,
                          tolerance = 0.05)
@@ -142,7 +142,7 @@ test_that("Uniform int under double peak property, sum methods", {
                                     values.C1 = dunif(1:101, min = 1, max = 101),
                                     individual_copy = "my_test_ind")
 
-            output <- threshold_peaks_one_indiv(data_filt, method_integration = "sum")
+            output <- threshold_peaks_one_individual(data_filt, method_integration = "sum")
 
             expect_equal(output$proportion_C1_intensity_in_domains, output$proportion_C2_area_in_domains)
           })

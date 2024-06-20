@@ -4,10 +4,11 @@
 #' @param data_filt data.frame subsetted for one individual
 #' @param plot_path either NULL (do not save plots) or a path to a directory to save plots
 #' @param dim.png dimensions of the plot to save, ignored if plot_path = FALSE
+#' @param method_integration method to determine area under the intensity curve within the domains
 #'
 #' @return a data.frame with 1 row, and columns for all computed variables
-#'
-threshold_peaks_one_indiv <- function(data_filt, plot_path = NULL, dim.png = c(1000,600), method_integration = "trapz"){
+#' @export
+threshold_peaks_one_individual <- function(data_filt, plot_path = NULL, dim.png = c(1000,600), method_integration = "trapz"){
 
 
   ind_name <- unique(data_filt$individual_copy)
