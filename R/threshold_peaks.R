@@ -7,7 +7,7 @@
 #'
 #' @return a data.frame with 1 row, and columns for all computed variables
 #'
-threshold_peaks_one_indiv <- function(data_filt, plot_path = NULL, dim.png = c(1000,600)){
+threshold_peaks_one_indiv <- function(data_filt, plot_path = NULL, dim.png = c(1000,600), method_integration = "trapz"){
 
 
   ind_name <- unique(data_filt$individual_copy)
@@ -19,6 +19,9 @@ threshold_peaks_one_indiv <- function(data_filt, plot_path = NULL, dim.png = c(1
 
   C2_peaks_pos <- find_peaks(C2)
 
+  if(length(C2_peaks_pos) < 1){
+    stop("No peak found")
+  }
 
   threshold = get_threshold(C2)
 
@@ -26,7 +29,9 @@ threshold_peaks_one_indiv <- function(data_filt, plot_path = NULL, dim.png = c(1
 
   C2_peaks_thresholded_pos <- C2_peaks_pos[C2_peaks_values > threshold]
 
-
+  if(length(C2_peaks_thresholded_pos) < 1){
+    stop("No peak found above threshold")
+  }
 
 
   #plot the worms' C2
@@ -68,25 +73,25 @@ threshold_peaks_one_indiv <- function(data_filt, plot_path = NULL, dim.png = c(1
 
   peak_positions <- purrr::map_dfr(seq_along(C2_peaks_thresholded_pos),
                                    ~ define_domain_per_peak(.x,
-                                                               C2,
-                                                               C2_peaks_pos,
-                                                               C2_peaks_thresholded_pos,
-                                                               spanD.left,
-                                                               spanD.right,
-                                                               spread = 3))
+                                                            C2,
+                                                            C2_peaks_pos,
+                                                            C2_peaks_thresholded_pos,
+                                                            spanD.left,
+                                                            spanD.right,
+                                                            spread = 3))
 
 
 
   if(! is.null(plot_path)){
-    png(filename = paste0(plot_path, "/domains_worm_", ind_name, ".png"),
-        width=dim.png[1],height=dim.png[2])
+    grDevices::png(filename = paste0(plot_path, "/domains_worm_", ind_name, ".png"),
+                   width=dim.png[1],height=dim.png[2])
 
 
-    pal_alpha = hcl.colors(nrow(peak_positions),
-                           palette = "Dark 2",
-                           alpha = .1)
-    pal_noalpha = hcl.colors(nrow(peak_positions),
-                             palette = "Dark 2")
+    pal_alpha = grDevices::hcl.colors(nrow(peak_positions),
+                                      palette = "Dark 2",
+                                      alpha = .1)
+    pal_noalpha = grDevices::hcl.colors(nrow(peak_positions),
+                                        palette = "Dark 2")
 
     plot(C2,
          t='l', col = 'green4', lwd = 2,
@@ -101,7 +106,7 @@ threshold_peaks_one_indiv <- function(data_filt, plot_path = NULL, dim.png = c(1
                    ybottom = 0, ytop = 1.1*max(C2_peaks_values),
                    col = pal_alpha, border = NA)
 
-    dev.off()
+    grDevices::dev.off()
   }
 
 
@@ -117,8 +122,10 @@ threshold_peaks_one_indiv <- function(data_filt, plot_path = NULL, dim.png = c(1
   C1_under_peaks[-x_under_peaks] <- 0
   # plot(C1_under_peaks)
 
-  intensity_C1_colocalized <- pracma::trapz(seq_along(C1_under_peaks), C1_under_peaks)
-  intensity_C1_total <- pracma::trapz(seq_along(C1_worm), C1_worm)
+  intensity_C1_colocalized <- intensity_under_curve(seq_along(C1_under_peaks), C1_under_peaks,
+                                                    method = method_integration)
+  intensity_C1_total <- intensity_under_curve(seq_along(C1_worm), C1_worm,
+                                              method = method_integration)
 
   ratio <- intensity_C1_colocalized/intensity_C1_total
 

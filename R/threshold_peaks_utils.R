@@ -69,7 +69,7 @@ define_domain_per_peak <- function(np, C2, C2_peaks_pos, C2_peaks_thresholded_po
   decision.right <- spanD.right[x.coord] + halfmax
 
   # borders of C2 domain in the span
-  bord.left <- tail(which(decision.left[1:floor(C2_peaks_interp_dist[peak_nb]/2 - 1)] == 0), n=1)
+  bord.left <- utils::tail(which(decision.left[1:floor(C2_peaks_interp_dist[peak_nb]/2 - 1)] == 0), n=1)
   if(length(bord.left) == 0) bord.left <- 0
 
   bord.right <- which(decision.right[ceiling(C2_peaks_interp_dist[peak_nb]/2 + 1):length(decision.right)] == 0)[1] + floor(C2_peaks_interp_dist[peak_nb]/2)
@@ -92,3 +92,32 @@ define_domain_per_peak <- function(np, C2, C2_peaks_pos, C2_peaks_thresholded_po
   c(init = border_init, end = border_end)
 
 }
+
+
+
+#' Compute area under curve
+#'
+#' @param x x coordinates
+#' @param y y coordinates
+#' @param method integration method
+#'
+#' @details
+#' If method is `trapz`, uses the Trapezoidal Integration from `{pracma}`. If method is `sum`, simply
+#' sums the heights of `y` (ignoring `x` altogether).
+#'
+#'
+#' @return The area under the curve (single numeric value)
+intensity_under_curve <- function(x, y, method = c("trapz", "sum")){
+  method <- match.arg(method)
+
+  if(method == "trapz"){
+
+    return(pracma::trapz(x, y))
+  } else if(method == "sum"){
+
+    return(sum(y))
+  } else{
+    stop("Invalid method: ", method)
+  }
+}
+

@@ -4,12 +4,17 @@
 \alias{threshold_peaks_one_indiv}
 \title{Threshold the peaks for single individual}
 \usage{
-threshold_peaks_one_indiv(data_filt, plot_path = FALSE, dim.png = c(1000, 600))
+threshold_peaks_one_indiv(
+  data_filt,
+  plot_path = NULL,
+  dim.png = c(1000, 600),
+  method_integration = "trapz"
+)
 }
 \arguments{
 \item{data_filt}{data.frame subsetted for one individual}
 
-\item{plot_path}{either FALSE (do not save plots) or a path to a directory to save plots}
+\item{plot_path}{either NULL (do not save plots) or a path to a directory to save plots}
 
 \item{dim.png}{dimensions of the plot to save, ignored if plot_path = FALSE}
 }

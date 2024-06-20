@@ -4,14 +4,14 @@
 \alias{whole_game}
 \title{Run whole script}
 \usage{
-whole_game(input_dir, output_dir, plot_path = FALSE, dim.png = c(1000, 600))
+whole_game(input_dir, output_dir, plot_path = NULL, dim.png = c(1000, 600))
 }
 \arguments{
 \item{input_dir}{where to find the csv files}
 
 \item{output_dir}{where to save results}
 
-\item{plot_path}{either FALSE (do not save plots) or a path to a directory to save plots}
+\item{plot_path}{either NULL (do not save plots) or a path to a directory to save plots}
 
 \item{dim.png}{dimensions (in pixels) of the plots to save, ignored if plot_path = FALSE}
 }

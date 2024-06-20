@@ -4,19 +4,12 @@
 \alias{read_condition}
 \title{Read data for single condition}
 \usage{
-read_condition(
-  dir_path,
-  col_individuals,
-  plot_path = FALSE,
-  dim.png = c(1000, 600)
-)
+read_condition(dir_path, plot_path = NULL, dim.png = c(1000, 600))
 }
 \arguments{
 \item{dir_path}{Path to data}
 
-\item{col_individuals}{If the path is to a csv file, the name of the column containing the individuals}
-
-\item{plot_path}{either FALSE (do not save plots) or a path to a directory to save plots}
+\item{plot_path}{either NULL (do not save plots) or a path to a directory to save plots}
 
 \item{dim.png}{dimensions of the plot to save, ignored if plot_path = FALSE}
 }

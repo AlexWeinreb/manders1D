@@ -5,7 +5,7 @@
 \title{Plot 1 individual's profile
 Title}
 \usage{
-plot_one_worm(data, ind_name = "#1")
+plot_one_worm(data, ind_name)
 }
 \arguments{
 \item{data}{data.frame for a all individuals, with columns `individual`, `values.C2`, `values.C1`}
